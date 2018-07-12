@@ -15,6 +15,16 @@
 
 package org.cloudfoundry.identity.uaa.oauth;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.cloudfoundry.identity.uaa.approval.ApprovalStore;
 import org.cloudfoundry.identity.uaa.audit.event.TokenIssuedEvent;
 import org.cloudfoundry.identity.uaa.authentication.UaaAuthentication;
@@ -40,8 +50,8 @@ import org.cloudfoundry.identity.uaa.zone.IdentityZoneHolder;
 import org.cloudfoundry.identity.uaa.zone.IdentityZoneProvisioning;
 import org.cloudfoundry.identity.uaa.zone.InMemoryClientServicesExtentions;
 import org.cloudfoundry.identity.uaa.zone.TokenPolicy;
+
 import org.mockito.stubbing.Answer;
-import org.opensaml.saml2.core.AuthnContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,16 +65,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.springframework.security.saml.saml2.authentication.AuthenticationContextClassReference;
 
 import static java.util.Collections.singleton;
 import static org.cloudfoundry.identity.uaa.oauth.UaaTokenServices.UAA_REFRESH_TOKEN;
@@ -295,7 +296,7 @@ public class TokenTestSupport {
         Set<String> amr = new HashSet<>();
         amr.addAll(Arrays.asList("ext", "mfa", "rba"));
         userAuthentication.setAuthenticationMethods(amr);
-        userAuthentication.setAuthContextClassRef(new HashSet<>(Arrays.asList(AuthnContext.PASSWORD_AUTHN_CTX)));
+        userAuthentication.setAuthContextClassRef(new HashSet<>(Arrays.asList(AuthenticationContextClassReference.PASSWORD.toString())));
         OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest.createOAuth2Request(), userAuthentication);
 
         OAuth2AccessToken accessToken = tokenServices.createAccessToken(authentication);

@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,14 +81,11 @@ import org.cloudfoundry.identity.uaa.zone.UserConfig;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.opensaml.xml.ConfigurationException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.env.MockEnvironment;
@@ -191,7 +189,7 @@ public class TokenMvcMockTests extends AbstractTokenMockMvcTests {
     public static void initializeSamlUtils() {
         try {
             samlTestUtils.initializeSimple();
-        } catch (ConfigurationException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1793,7 +1791,7 @@ public class TokenMvcMockTests extends AbstractTokenMockMvcTests {
 
         UriComponents locationComponents = UriComponentsBuilder.fromUri(URI.create(mvcResult.getResponse().getHeader("Location"))).build();
         MultiValueMap<String, String> queryParams = locationComponents.getQueryParams();
-        String errorMessage = URIUtil.encodeQuery("scim.write is invalid. Please use a valid scope name in the request");
+        String errorMessage = UriUtils.encodeQuery("scim.write is invalid. Please use a valid scope name in the request", StandardCharsets.UTF_8.name());
         assertTrue(!queryParams.containsKey("scope"));
         assertEquals(errorMessage, queryParams.getFirst("error_description"));
     }
@@ -1825,7 +1823,7 @@ public class TokenMvcMockTests extends AbstractTokenMockMvcTests {
 
         UriComponents locationComponents = UriComponentsBuilder.fromUri(URI.create(mvcResult.getResponse().getHeader("Location"))).build();
         MultiValueMap<String, String> queryParams = locationComponents.getQueryParams();
-        String errorMessage = URIUtil.encodeQuery("[something.else] is invalid. This user is not allowed any of the requested scopes");
+        String errorMessage = UriUtils.encodeQuery("[something.else] is invalid. This user is not allowed any of the requested scopes", StandardCharsets.UTF_8.name());
         assertTrue(!queryParams.containsKey("scope"));
         assertEquals(errorMessage, queryParams.getFirst("error_description"));
     }
